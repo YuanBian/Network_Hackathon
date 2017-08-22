@@ -1,0 +1,43 @@
+Import functions and library
+```{r}
+source("wb_helper.r")
+source("make_pairs_helper.r")
+source("phono_helper.r")
+import_all_library()
+```
+
+
+Function that makes word pairs with phonetic edit distance
+```{r}
+make_phono_word_pairs<- function(languages){
+  for(lang in languages){
+    # Calculate AOA
+    item_data<- get_lang_item_data(lang = lang, lang_form = "WS",lex_class = "nouns") %>%
+      trim_definition()
+    instr_data<- get_lang_instr_data(lang = lang, lang_form = "WS")
+    admin_data<- get_lang_admin_data(lang = lang, lang_form = "WS")
+    aoa<- get_lang_aoa(item_data = item_data, admin_data = admin_data, instr_data = instr_data) %>%
+      select(definition, age)
+    write_out_csv(var = aoa, lang = lang, type = "aoa")
+    
+    def_list<- item_data %>%
+      select(item, definition)
+    # Make word pairs with phonetic edit distance
+    IPA_pairs<- make_IPA_pairs(def_list = def_list, lang = lang)
+    write_out_csv(var = IPA_pairs, lang = lang, type = "pairs")
+  }
+}
+
+```
+
+
+```{r}
+make_phono_word_pairs(languages = c("English (American)"))
+```
+
+
+
+
+
+
+
